@@ -1,36 +1,116 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kithra
 
-## Getting Started
+A chat companion with a fixed personality and an open memory.
 
-First, run the development server:
+Most companion apps keep a private file on you that you never get to read. Kithra
+turns that file into a page you can open, correct, and empty whenever you like —
+and it never leaves your browser.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## The idea
+
+Three problems show up in every persistent-personality chatbot:
+
+1. **Cost** — sending the whole conversation history on every request means the
+   bill grows with the relationship.
+2. **Drift** — the character forgets who it is somewhere around message eighty.
+3. **Trust** — users have no way to see, correct, or delete what the system
+   decided to keep about them.
+
+The usual answer to (1) and (2) is a hidden summarisation layer. Kithra's bet is
+that this layer should not be hidden at all. Making it visible solves (3) for
+free, and turns the least trustworthy part of the product into the reason to use
+it.
+
+## How it works
+
+```
+you type
+    │
+    ▼
+context assembled in the browser
+    ├── persona contract        (short, fixed)
+    ├── pinned memories         (always sent)
+    ├── recent memories         (capped at 18)
+    └── last 12 messages
+    │
+    ▼
+POST /api/chat ──► Groq · llama-3.3-70b-versatile ──► streamed back token by token
+    │
+    ▼
+reply lands, then in the background:
+POST /api/remember ──► llama-3.1-8b-instant ──► proposes notes ──► your ledger
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The context ceiling is the whole cost story: pinned notes + 18 recent notes +
+12 messages. A conversation can run for a year and the request never grows past
+that bound.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Extraction runs *after* the reply has already reached you, on the cheap model, so
+the memory feature costs a fraction of a cent per exchange and never adds latency.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Storage
 
-## Learn More
+There is no database. Messages and memories live in `localStorage`, keyed per
+persona. The only thing that leaves the device is the context assembled for a
+single reply, and the server never writes it down.
 
-To learn more about Next.js, take a look at the following resources:
+That is a real product decision, not a shortcut — it is what makes the privacy
+claim on the landing page true. It also means memory does not follow you between
+browsers. Moving to Postgres behind an auth layer is the obvious next step for
+anyone who wants sync; `src/lib/store.ts` is deliberately the only file that
+would need to change.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Running it
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm install
+cp .env.example .env.local     # add your Groq key
+npm run dev
+```
 
-## Deploy on Vercel
+Get a key at [console.groq.com/keys](https://console.groq.com/keys).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Variable | Required | Default |
+| --- | --- | --- |
+| `GROQ_API_KEY` | yes | — |
+| `KITHRA_MODEL` | no | `llama-3.3-70b-versatile` |
+| `KITHRA_EXTRACT_MODEL` | no | `llama-3.1-8b-instant` |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Layout
+
+```
+src/
+├── app/
+│   ├── page.tsx              landing
+│   ├── chat/page.tsx         the app
+│   └── api/
+│       ├── chat/             streaming reply
+│       └── remember/         memory extraction
+├── components/
+│   ├── Logo.tsx              the knot mark
+│   └── MemoryPanel.tsx       the ledger
+└── lib/
+    ├── persona.ts            three voice contracts
+    ├── store.ts              local-first storage + context assembly
+    └── ratelimit.ts          per-IP token bucket
+```
+
+## Known limits
+
+- **Rate limiting is per warm serverless instance**, not global. It blunts casual
+  abuse; it is not a real quota. Swap the two map operations in `ratelimit.ts`
+  for Redis before this matters.
+- **Memory extraction is imperfect.** The small model sometimes keeps something
+  trivial or phrases a note oddly. That is precisely why every row is editable.
+- **No sync across devices**, by construction. See *Storage* above.
+
+## Name
+
+*Kith* — from Old English *cȳþþu*, the people who have become familiar to you.
+The half of "kith and kin" that you choose rather than inherit.
+
+## Licence
+
+MIT
