@@ -35,7 +35,8 @@ anything the assistant said about itself, or anything already in the known list.
 Returning an empty array is the correct answer most of the time.`;
 
 export async function POST(req: Request) {
-  const key = process.env.GROQ_API_KEY;
+  // Same BOM/whitespace guard as the chat route — see the note there.
+  const key = process.env.GROQ_API_KEY?.replace(/^﻿/, "").trim() || "";
   if (!key) return Response.json({ memories: [] });
 
   if (!takeToken(clientIp(req)).ok) return Response.json({ memories: [] });

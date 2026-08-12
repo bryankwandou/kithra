@@ -42,8 +42,13 @@ ${lines.join("\n")}
 Use what you know when it's genuinely relevant. Do not recite these facts back at them or open by listing what you remember — that reads as a party trick. If something here contradicts what they tell you now, believe what they tell you now.`;
 }
 
+/** Keys pasted from a file often carry a BOM or stray whitespace, and either one
+ *  makes the Authorization header throw before the request is even sent. */
+const cleanKey = () =>
+  process.env.GROQ_API_KEY?.replace(/^﻿/, "").trim() || "";
+
 export async function POST(req: Request) {
-  const key = process.env.GROQ_API_KEY;
+  const key = cleanKey();
   if (!key) {
     return Response.json(
       { error: "GROQ_API_KEY is not set on the server." },
