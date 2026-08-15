@@ -1,0 +1,21 @@
+[toolchain]
+package_manager = "yarn"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.devnet]
+kithra_ledger = "FJZb6EiwuqEui7jkVGYWSS7xQLzqMaSjpHSBwRdBiyyY"
+
+[programs.localnet]
+kithra_ledger = "FJZb6EiwuqEui7jkVGYWSS7xQLzqMaSjpHSBwRdBiyyY"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "cargo test"
+
+[hooks]

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import AnchorPanel from "./AnchorPanel";
 import {
   forgetMemory,
   updateMemory,
@@ -239,8 +240,11 @@ export default function MemoryPanel({
         )}
       </div>
 
+      <AnchorPanel memories={memories} />
+
       <p className="border-t border-line px-5 py-3 text-[11px] leading-relaxed text-muted">
-        Stored in this browser. Never uploaded.
+        Kept in this browser. Pinned and recent notes travel with each message to
+        the model that writes the reply; nothing is stored on our side.
       </p>
     </div>
   );

@@ -113,7 +113,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted"
             >
-              Companion chat · open memory
+              Portable AI memory · yours to keep
             </motion.p>
 
             <motion.h1
@@ -122,11 +122,11 @@ export default function Home() {
               transition={{ duration: 0.75, delay: 0.08, ease }}
               className="mt-5 font-serif text-[2.9rem] leading-[1.06] tracking-tight text-ink sm:text-6xl"
             >
-              It remembers you.
+              Every assistant
               <br />
-              And it shows you
+              starts you at zero.
               <br />
-              <span className="text-ember">exactly what it kept.</span>
+              <span className="text-ember">This one doesn&rsquo;t.</span>
             </motion.h1>
 
             <motion.p
@@ -135,9 +135,10 @@ export default function Home() {
               transition={{ duration: 0.7, delay: 0.2, ease }}
               className="mt-7 max-w-lg text-[17px] leading-relaxed text-ink-2"
             >
-              Most companion apps keep a private file on you that you never get to
-              read. Kithra turns that file into a page you can open, correct, and
-              empty whenever you like — and it stays on your machine.
+              You have explained your job, your stack, and your family to a dozen
+              chatbots, and every one of them kept a private file on you that you
+              cannot read or take with you. Kithra turns that file into a ledger
+              you can open, correct, carry, and prove is yours.
             </motion.p>
 
             <motion.div
@@ -244,20 +245,83 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── ownership / chain ── */}
+      <section className="border-y border-line bg-paper-2">
+        <div className="mx-auto w-full max-w-6xl px-6 py-20">
+          <Reveal>
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted">
+              Proof of ownership
+            </p>
+            <h2 className="mt-4 max-w-3xl font-serif text-3xl leading-tight text-ink sm:text-4xl">
+              A ledger only you can read is worth little if you cannot prove it is
+              yours.
+            </h2>
+            <p className="mt-6 max-w-2xl text-[15px] leading-relaxed text-ink-2">
+              Keeping memory on your own device solves the privacy half of the
+              problem and creates a new one: nothing ties that file to you, and
+              nothing stops it being altered. Handing the file back to a company to
+              vouch for would undo the point of holding it in the first place.
+            </p>
+            <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-ink-2">
+              So Kithra publishes a fingerprint instead. One press signs a SHA-256
+              hash of your ledger to Solana under your own wallet, along with a
+              version number and an entry count. Later, from any machine, the app
+              recomputes the hash and compares. Match, and the ledger is provably
+              intact and provably yours. Change one word and the next check says so.
+            </p>
+          </Reveal>
+
+          <div className="mt-14 grid gap-10 sm:grid-cols-3">
+            {[
+              {
+                n: "01",
+                h: "The chain never sees a word",
+                p: "Only a 32-byte hash goes on chain. Nobody reading the account learns anything about what you wrote — a hash cannot be run backwards into a sentence.",
+              },
+              {
+                n: "02",
+                h: "No company in the middle",
+                p: "The record sits under your wallet, not in a vendor's table. There is no account to be locked out of and no service whose shutdown takes your history with it.",
+              },
+              {
+                n: "03",
+                h: "Erasure means erasure",
+                p: "Revoking closes the account and returns its rent. A product that lets you delete locally while keeping a permanent public trace would be lying about deletion.",
+              },
+            ].map((c, i) => (
+              <Reveal key={c.n} delay={i * 0.1}>
+                <div className="border-t border-line pt-5">
+                  <span className="font-mono text-[11px] tracking-wider text-ember">
+                    {c.n}
+                  </span>
+                  <h3 className="mt-3 font-serif text-xl text-ink">{c.h}</h3>
+                  <p className="mt-2.5 text-[14px] leading-relaxed text-ink-2">{c.p}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── privacy ── */}
       <section className="border-y border-line bg-paper-2">
         <div className="mx-auto w-full max-w-3xl px-6 py-20 text-center">
           <Reveal>
             <Mark size={38} className="mx-auto" />
             <h2 className="mt-7 font-serif text-3xl leading-tight text-ink sm:text-4xl">
-              Your side of the conversation never touches our database.
+              What we keep, precisely.
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-ink-2">
-              There is no database. Messages and notes live in your browser. The
-              only thing that leaves your machine is the context assembled for a
-              single reply, and it is never written down on the way through. Export
-              the whole archive as JSON any time — or clear it in one click and
-              leave nothing behind.
+              We run no database. Messages and ledger entries live in your browser,
+              and you can export the archive as JSON or wipe it in one click.
+            </p>
+            <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-ink-2">
+              What we will not pretend: generating a reply means sending the
+              assembled context to a model provider, which is Groq today. They see
+              those words in order to answer, under their own retention terms. Our
+              servers keep no copy, and nothing is ever written to disk on the way
+              through — but a claim that your words never leave the machine would be
+              false, so we are not making it.
             </p>
             <Link
               href="/chat"
