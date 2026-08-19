@@ -15,12 +15,18 @@ const mono = JetBrains_Mono({ variable: "--font-mono-jb", subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "Kithra — the companion that shows you what it remembers",
   description:
-    "A chat companion with a fixed personality and an open memory. Every fact it keeps about you is a row you can read, edit, or erase. Stored on your device, not ours.",
+    "A chat companion with a fixed personality and an open memory. Every fact it keeps about you is a row you can read, edit, or erase — held on your device, and provable as yours through a hash you sign to Solana.",
   openGraph: {
     title: "Kithra",
     description:
-      "A chat companion with a fixed personality and an open memory you control.",
+      "An open memory ledger you can correct, empty, and prove is yours.",
     type: "website",
+  },
+  twitter: {
+    card: "summary",
+    title: "Kithra",
+    description:
+      "An open memory ledger you can correct, empty, and prove is yours.",
   },
 };
 

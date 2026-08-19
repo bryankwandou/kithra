@@ -95,8 +95,10 @@ export async function POST(req: Request) {
   });
 
   if (!upstream.ok || !upstream.body) {
-    const detail = await upstream.text().catch(() => "");
-    console.error("groq chat failed", upstream.status, detail.slice(0, 400));
+    // Deliberately not logging the upstream body. A provider error can echo a
+    // fragment of the prompt back, and the landing page promises that none of a
+    // conversation is written down here. The status code is the diagnostic part.
+    console.error("groq chat failed", upstream.status);
     return Response.json(
       { error: "The model is unreachable right now." },
       { status: 502 },

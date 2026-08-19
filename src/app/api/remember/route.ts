@@ -106,7 +106,12 @@ export async function POST(req: Request) {
     return Response.json({ memories });
   } catch (err) {
     // Extraction is best-effort: a failure here must never break the chat.
-    console.error("extraction failed", err);
+    // A SyntaxError here carries a slice of the model's output in its message,
+    // which is derived from the conversation. Report the shape, not the text.
+    console.error(
+      "extraction failed",
+      err instanceof SyntaxError ? "malformed model json" : err,
+    );
     return Response.json({ memories: [] });
   }
 }
